@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $DIR/utils/setup
+
+FORCE='--force'  #  '--force' or ''
+
+aws_dir=$PROVIDER_DIR/aws
+if [[ ! -d ${aws_dir} ]]
+then
+  echo ERROR: Missing aws provider in $aws_dir
+  echo please run '$DIR/provider-author' and try again
+  exit -1
+fi
+
+rm -rf $COMPOSITION_DIR
+mkdir -p $COMPOSITION_DIR
+cd $COMPOSITION_DIR
+
+echo
+echo
+echo ###############################
+echo #    System Architect Demo    #
+echo ###############################
+
+echo 
+tufan registry start --port $PORT --force > null 2>&1 || true
+
+echo 
+echo tufan init --registry http://localhost:$PORT
+tufan init --registry http://localhost:$PORT
+tufan ls
+
+echo 
+echo use provider aws
+tufan use-provider
+tufan ls
+
+echo 
+echo tufan add s3
+tufan add s3
+tufan ls
+
+echo 
+echo tufan add lambda
+tufan add lambda
+tufan ls
+
+echo 
+echo tufan link s3_1 lambda_1
+tufan link s3_1 lambda_1
+tufan ls
+
+echo 
+echo tufan add az
+tufan add az
+tufan ls
+
+echo 
+echo tufan add ec2
+tufan add ec2
+tufan ls
+
+echo 
+echo tufan attach az_1 ec2_1
+tufan attach az_1 ec2_1
+tufan ls
+
+
+echo 
+echo tufan deploy --visual-trace --for-real
+
+tufan deploy --visual-trace --for-real
+
+echo 
+echo 
+echo 
+echo ############################################
+echo #   Composition deployed successfully!!!   #
+echo ############################################
+echo 
+echo 
+
+cd $BASE_DIR

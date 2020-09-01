@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $DIR/utils/setup
+
+FORCE='--force'  #  '--force' or ''
+# WITH_ERRORS='with_errors'
+
+aws_dir=$PROVIDER_DIR/aws
+if [[ ! -d ${aws_dir} ]]
+then
+  echo ERROR: Missing aws provider in $aws_dir
+  echo please run '$DIR/provider-author' and try again
+  exit -1
+fi
+
+cfile=$COMPOSITION_DIR/composition.tufan
+
+if [[ ! -f ${cfile} ]]
+then
+    echo missing '$cfile'. Cannot continue
+    exit -2
+fi
+
+cd $COMPOSITION_DIR
+
+echo 
+tufan registry start --port $PORT --force > null 2>&1 || true
+
+echo
+echo
+echo ###############################
+echo #    Composition teardown     #
+echo ###############################
+
+tufan ls
+
+if [[ -z ${WITH_ERRORS+x} ]]
+then
+    echo
+    echo tufan rm s3_1
+    tufan rm s3_1
+    tufan ls 
+fi
+
+if [[ -z ${WITH_ERRORS+x} ]]
+then
+    echo
+    echo EXPECTED ERROR
+    echo tufan rm az_1
+    tufan rm az_1 || echo.
+fi
+
+echo
+echo tufan detach
+tufan detach 
+tufan ls
+
+echo 
+echo tufan unlink
+tufan unlink
+tufan ls
+
+echo 
+echo tufan rm s3_1
+tufan ls
+
+echo 
+echo tufan rm lambda_1
+tufan rm lambda_1
+tufan ls
+
+echo 
+echo tufan rm az_1
+tufan rm az_1
+tufan ls
+
+echo 
+echo tufan rm ec2_1
+tufan rm ec2_1
+tufan ls
+
+echo 
+echo tufan deploy --visual-trace --for-real
+tufan deploy --visual-trace --for-real
+
+cd %BASE_DIR%
+
+echo 
+echo tufan registry stop --port 25052
+tufan registry stop --port 25052
+
+echo 
+echo tufan registry delete --port 25052
+tufan registry delete --port 25052
+
+cd $BASE_DIR

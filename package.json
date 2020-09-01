@@ -1,0 +1,30 @@
+{
+  "name": "@tufan-io/tufan-cli",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node ./scripts/scatter-bin.js"
+  },
+  "files": [
+    "demo",
+    "scripts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tufan-io/tufan-cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tufan-io/tufan-cli/issues"
+  },
+  "homepage": "https://github.com/tufan-io/tufan-cli#readme",
+  "scatter-bin": {
+    "bin": {
+      "tufan": "./bin/tufan"
+    },
+    "downloadUrl": "https://github.com/tufan-io/tufan-cli/releases"
+  }
+}

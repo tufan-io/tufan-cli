@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+
+if [[ -z ${BASE_DIR+x} ]]
+then
+  export BASE=`realpath $DIR/../../..`
+  echo BASE = $BASE
+fi
+
+if [[ -z ${BIN_DIR+x} ]]
+then
+  export BIN_DIR=`realpath $BASE/bin`
+  echo BIN_DIR = $BIN_DIR
+fi
+
+if [[ -z ${TARGET_DIR+x} ]]
+then
+  export TARGET_DIR=`realpath $BASE/.tmp`
+  echo TARGET_DIR=$TARGET_DIR
+fi
+
+export PORT=25052
+echo PORT=$PORT
+
+if [[ -d "$BIN_DIR" ]] && [[ ":$PATH:" != *":$BIN_DIR:"* ]]
+then
+  echo Prepending $BIN_DIR to path...
+  export PATH="$BIN_DIR${PATH:+":$PATH"}"
+fi

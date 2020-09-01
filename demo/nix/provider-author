@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $DIR/utils/setup
+
+FORCE='--force'  #  '--force' or ''
+INIT='--no-init'    # '--no-init' or ''
+
+tufan registry stop --port $PORT --force > /dev/null 2>&1 || true
+tufan registry delete --port $PORT --force > /dev/null 2>&1 || true
+
+aws_dir=$PROVIDER_DIR/aws
+echo aws_dir = $aws_dir
+rm -rf $aws_dir
+mkdir -p $aws_dir
+cd $aws_dir
+
+echo
+echo
+echo ###############################
+echo #    Provider Author flow     #
+echo ###############################
+
+echo
+echo
+echo tufan dev create provider . @tufan-io/aws $FORCE $INIT
+tufan dev create provider . @tufan-io/aws $FORCE $INIT
+
+echo
+echo
+echo tufan dev create component s3 $FORCE $INIT
+tufan dev create component s3 $FORCE $INIT
+
+echo
+echo
+echo tufan dev create component lambda $FORCE $INIT
+tufan dev create component lambda $FORCE $INIT
+
+echo
+echo
+echo tufan dev create component ec2 $FORCE $INIT
+tufan dev create component ec2 $FORCE $INIT
+
+echo
+echo
+echo tufan dev create component az $FORCE $INIT
+tufan dev create component az $FORCE $INIT
+
+echo
+echo
+echo tufan dev create link s3 lambda $FORCE $INIT
+tufan dev create link s3 lambda $FORCE $INIT
+
+echo
+echo
+echo tufan dev create attacher az ec2 $FORCE $INIT
+tufan dev create attacher az ec2 $FORCE $INIT
+
+echo
+echo
+echo npm install --silent
+npm install --silent || true
+
+echo
+echo
+echo
+# TODO: add any hard coded modifications to the components/facets here.
+echo ::: Library author would add code mofications here
+echo
+read  -n 1 -p "ENTER ANY KEY TO CONTINUE"
+
+echo
+echo
+
+echo
+echo
+echo npm run build --silent
+npm run build --silent || true
+
+echo
+echo
+echo ::: commit provider to a git repo
+echo pwd=`pwd`
+echo git init .
+git init .
+echo git add .
+git add .
+echo git commit -m "initial commit of demo provider"
+git commit -m "initial commit of demo provider" -q --no-verify
+
+echo
+echo
+echo tufan registry create --port $PORT --ephemeral
+tufan registry create --port $PORT --ephemeral
+
+echo
+echo
+echo tufan registry start --port $PORT
+tufan registry start --port $PORT --force
+
+echo
+echo
+echo tufan publish --tufan-registry http://localhost:$PORT --file
+tufan publish --tufan-registry http://localhost:$PORT --file
+
+
+echo
+echo
+echo
+echo ##########################################
+echo #   Provider published successfully!!!   #
+echo ##########################################
+echo
+echo
+
+cd $BASE_DIR
