@@ -1,6 +1,6 @@
 {
   "name": "tufan-cli",
-  "version": "0.1.0-rc1.3",
+  "version": "0.1.0-rc1.5",
   "description": "",
   "main": "index.js",
   "scripts": {
